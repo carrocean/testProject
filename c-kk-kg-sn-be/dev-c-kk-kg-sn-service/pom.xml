@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>c-kk-kg-sn</artifactId>
+        <groupId>com.yonyou.ucf</groupId>
+        <version>ddm-3.0-RELEASE</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>c-kk-kg-sn-service</artifactId>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>iuap-org-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>iuap-org-sdk</artifactId>
+            <version>4.1.5-RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.ucf</groupId>
+            <artifactId>c-kk-kg-sn-infrastructure</artifactId>
+            <version>${ucf-mdf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.ucf</groupId>
+            <artifactId>c-kk-kg-sn-api</artifactId>
+            <version>${ucf-mdf.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.ypd</groupId>
+            <artifactId>ypd-billservice</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou.iuap</groupId>
+            <artifactId>iuap-tenant-sdk</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.yonyou</groupId>
+            <artifactId>mdd-pub-jar</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bizFlow-runtime-sdk</artifactId>
+                    <groupId>com.yonyou.common</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+</project>

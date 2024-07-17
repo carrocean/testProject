@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.3.xsd"
+       default-autowire="byName">
+
+    <!--imeta -->
+    <context:component-scan base-package="org.imeta"
+                            use-default-filters="false">
+        <context:include-filter type="assignable"
+                                expression="org.imeta.core.base.MetaAware" />
+        <context:include-filter type="assignable"
+                                expression="org.imeta.orm.base.SqlBuilder" />
+        <context:include-filter type="assignable"
+                                expression="org.imeta.tpl.base.TplBean" />
+        <context:include-filter type="assignable"
+                                expression="org.imeta.spring.tpl.builder.CodeGenerateService" />
+        <context:exclude-filter type="aspectj"
+                                expression="org.imeta.tpl.builder.*.*" />
+    </context:component-scan>
+
+    <bean class="org.imeta.orm.query.QuerySqlBuilder">
+        <property name="functionRepository">
+            <bean class="org.imeta.spring.support.orm.DefaultFunctionRepository">
+                <property name="signatures">
+                    <list>
+                        <value>String fn_date_format(DateTime,String)</value>
+                        <value>String fn_formatdateyyyymmdd(DateTime)</value>
+                        <value>Number fn_yearweek(DateTime)</value>
+                        <value>Number year(DateTime)</value>
+                        <value>Number month(DateTime)</value>
+                        <value>Number day(DateTime)</value>
+                        <value>Number hour(DateTime)</value>
+                        <value>Number dayofweek(DateTime)</value>
+                        <value>Any sum(Any)</value>
+                        <value>Any ifnull(Any,Any)</value>
+                        <value>Number count(Any)</value>
+                        <value>Any max(Any)</value>
+                        <value>Any min(Any)</value>
+                        <value>Any avg(Any)</value>
+                        <value>Any concat(Any...)</value>
+                        <value>String substring(String, Number)</value>
+                        <value>String substring(String, Number, Number)</value>
+                        <value>Any group_concat(Any...)</value>
+                        <value>Any abs(Any)</value>
+                    </list>
+                </property>
+                <property name="functions">
+                    <list>
+                        <bean class="org.imeta.orm.query.function.FunctionDefinition"
+                              p:alias="distinct" p:prefix=" " p:suffix="">
+                            <constructor-arg value="Any distinct(Any...)"/>
+                        </bean>
+                        <bean class="org.imeta.orm.query.function.FunctionDefinition"
+                              p:alias="count(distinct" p:prefix=" " p:suffix=")">
+                            <constructor-arg value="Number count_distinct(Any...)"/>
+                        </bean>
+                        <bean class="org.imeta.orm.query.function.FunctionDefinition"
+                              p:alias="replace" p:prefix="(" p:suffix=")">
+                            <constructor-arg value="String fn_replace(String, String, String)"/>
+                        </bean>
+                        <bean class="org.imeta.orm.query.function.FunctionDefinition"
+                              p:alias="substring" p:prefix="(" p:suffix=")">
+                            <constructor-arg value="String fn_substr(String, Number, Number)"/>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <property name="querySqlPreProcessor">
+            <bean class="org.imeta.spring.support.orm.DefaultQuerySqlPreProcessor"/>
+        </property>
+    </bean>
+
+    <bean id="MySqlTableColumnBuilder" class="org.imeta.tpl.builder.mysql.TableColumnBuilder" />
+    <bean id="MySqlTableIndexBuilder" class="org.imeta.tpl.builder.mysql.TableIndexBuilder" />
+    <bean id="OracleTableColumnBuilder" class="org.imeta.tpl.builder.oracle.TableColumnBuilder" />
+    <bean id="OracleTableIndexBuilder" class="org.imeta.tpl.builder.oracle.TableIndexBuilder" />
+
+    <bean class="org.imeta.spring.support.profile.DomainIsolationPropertyProfile" />
+    <bean id="mysql" class="org.imeta.orm.dialect.support.MySqlDialect" />
+
+    <!-- 翻译使用 -->
+    <bean id="metaBeanFactory" class="org.imeta.spring.base.UnfiedBeanFactory">
+        <property name="configLocation" value="classpath:imeta-config.properties" />
+        <property name="localDataAccessProxy">
+            <bean class="com.yonyou.ucf.mdd.core.meta.MetaDaoDataAccessProxy" />
+        </property>
+        <!--        转换器影响太大暂时去掉,imeta需想办法解决-->
+        <property name="converters">
+            <list>
+                <bean id="stringDateConverter" class="org.imeta.spring.support.orm.StringDateConverter" />
+            </list>
+        </property>
+    </bean>
+    <bean name="localDataAccessProxy" class="com.yonyou.ucf.mdd.core.meta.MetaDaoDataAccessProxy" />
+
+    <bean name="serviceQuerySchemaServiceProxy"
+          class="com.yonyou.ucf.mdd.ext.dao.meta.service.QuerySchemaServiceImpl"/>
+    <!--dataFetchHandlers-->
+    <bean name="serviceDataFetchHandler" class="org.imeta.spring.support.orm.QuerySchemaHandlerAdapter">
+        <property name="proxy" ref="serviceQuerySchemaServiceProxy"/>
+    </bean>
+    <bean name="redisDataFetchHandler" class="org.imeta.spring.support.orm.HashCacheHandlerAdapter">
+        <property name="proxy">
+            <bean class="com.yonyou.ucf.mdd.ext.dao.meta.service.RedisHashCacheServiceImpl"/>
+        </property>
+    </bean>
+
+    <bean id="modelManager" class="org.imeta.spring.support.db.ModelManager" depends-on="metaBeanFactory" />
+    <!--    imeta升级到2.0.21额外声明bean-->
+    <bean id="unifiedMetaProperties" class="org.imeta.spring.support.cache.UnifiedMetaProperties" />
+
+    <context:component-scan base-package="com.yonyou,com.yonyoucloud.uretail.sys.auth" use-default-filters="false"
+                            name-generator="org.imeta.spring.bean.BizObjectBeanNameGenerator"
+                            scope-resolver="org.imeta.spring.bean.BizObjectScopeMetadataResolver">
+        <context:include-filter type="assignable" expression="org.imeta.orm.base.BizObject"/>
+        <!-- <context:exclude-filter type="regex" expression="com.yonyoucloud.uretail.*"/> -->
+    </context:component-scan>
+
+</beans>

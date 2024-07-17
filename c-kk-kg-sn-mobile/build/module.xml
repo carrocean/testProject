@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module name="iuap-yonbuilder-mobilenode.runtime-mobile-fe" description="统一node扩展">
+  <nginx_mode>ucf</nginx_mode>
+</module>

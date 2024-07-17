@@ -1,0 +1,13 @@
+{
+  "features": [
+    "UImobans",
+    "newMovePrevOrNext",
+    "batchExportWithCondition",
+    "lazyLoadPage",
+    "hasProcessHandler",
+    "importWorkbench",
+    "importReferenceTranslation",
+    "mergeAllConditionStates",
+    "getTplIdFirst"
+  ]
+}
